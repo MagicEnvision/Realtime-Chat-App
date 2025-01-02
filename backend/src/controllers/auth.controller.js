@@ -5,6 +5,9 @@ export const signup = async (req, res) => {
 
     const {fullname, email, password} = req.body;
     try {
+        if(!fullname || !email || !password) {
+            res.status(400).json({message: "All fields are required"})
+        }
         if(password.length < 6){
             return res.status(400).json({message: "password is less than 6 characters"})
         }
@@ -41,7 +44,19 @@ export const signup = async (req, res) => {
         res.status(500).json({message: "Internal Server Error"})
     }
 }
-export const login = (req, res) => {
+export const async login = (req, res) => {
+    const {email, password} = req.body;
+
+    try {
+        const user = await User.findOne({email})
+
+        if(!user) {
+            return res.status(400).json({message: "Invalid Credentials"}) //dont tell user what is incorrect email or password
+        }
+        
+    } catch (error) {
+        
+    }
     res.send("Login route")
 }
 export const logout = (req, res) => {
