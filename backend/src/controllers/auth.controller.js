@@ -44,7 +44,7 @@ export const signup = async (req, res) => {
         res.status(500).json({message: "Internal Server Error"})
     }
 }
-export const async login = (req, res) => {
+export const login  = async (req, res) => {
     const {email, password} = req.body;
 
     try {
@@ -53,12 +53,29 @@ export const async login = (req, res) => {
         if(!user) {
             return res.status(400).json({message: "Invalid Credentials"}) //dont tell user what is incorrect email or password
         }
-        
+        const isPasswordCorrect = await bcrypt.compare(password, user.password)
+        if(!isPasswordCorrect) {
+            return res.status(400).json({message: "Invalid Credentials"})
+        }
+        generateToken(user._id, res)
+        res.status(200).json({
+            _id:user._id,
+            fullname:user.fullname,
+            email:user.email,
+            profilePic: user.profilePic
+        })
     } catch (error) {
-        
+        console.log("Error in login credentials", error.message)
+        res.status(500).json({message: "Internal Server Error"})
     }
-    res.send("Login route")
-}
+};
+
 export const logout = (req, res) => {
-    res.send("Logout route")
+    try {
+        res.cookie("jwt", "", {maxAge:0})
+        res.status(200).json({message: "Logged out Successfully"})
+    } catch (error) {
+        console.log("Error in login credentials", error.message)
+        res.status(500).json({message: "Internal Server Error"})
+    }
 }
