@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv"
+import cookieParser from "cookie-parser"
 
 
 dotenv.config();
@@ -14,6 +15,7 @@ const PORT = process.env.PORT;
 
 app.use(express.json())
 app.use("/api/auth", authRoutes)
+app.use(cookieParser())
 app.listen(PORT, () => {
     console.log("Server is running on port "+ PORT)
     connectDB();
